@@ -7,17 +7,21 @@ export type Player = {
 };
 
 export type GameState = {
-    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED' | 'VOTING' | 'REVEALING';
+    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED' | 'VOTING' | 'REVEALING' | 'SUBMITTING';
     winnerId?: string;
     currentTurn?: string;
     board: any;
     lastMove?: any;
 };
 
-export interface IGameEngine {
-    initialize(players: Player[]): GameState;
-    makeMove(playerId: string, move: any, currentState: GameState): { newState: GameState; valid: boolean; error?: string };
-    checkWinner(state: GameState): string | null;
+export interface HangmanGameState extends GameState {
+    word?: string;
+    maskedWord: string[];
+    guessedLetters: string[];
+    wrongLetters: string[];
+    attemptsLeft: number;
+    setterId: string;
+    guesserId: string;
 }
 
 export interface LieDetectorGameState extends GameState {
@@ -31,13 +35,42 @@ export interface LieDetectorGameState extends GameState {
     totalRounds: number;
 }
 
+export interface BluffGameState extends GameState {
+    status: 'WAITING' | 'SUBMITTING' | 'VOTING' | 'REVEALING' | 'FINISHED';
+    prompt: { id: string; text: string; category: string };
+    liarIds: string[];
+    responses: { [playerId: string]: string };
+    shuffledResponses?: { text: string; authorId?: string }[];
+    votes: { [voterId: string]: string };
+    scores: { [playerId: string]: number };
+    currentRound: number;
+    totalRounds: number;
+    mode: 'CLASSIC' | 'CHAOS' | 'QUICK';
+    timer?: number;
+}
+
+export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR' | 'BLUFF';
+
+export interface IGameEngine {
+    initialize(players: Player[]): GameState;
+    makeMove(playerId: string, move: any, currentState: GameState): { newState: GameState; valid: boolean; error?: string };
+    checkWinner(state: GameState): string | null;
+}
+
+export type ChatMessage = {
+    playerId: string;
+    username: string;
+    text: string;
+    timestamp: number;
+};
+
 export type Room = {
     id: string;
     code: string;
     players: Player[];
     status: 'WAITING' | 'PLAYING';
-    gameType?: 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR';
+    gameType?: string;
     gameState?: GameState;
     rematchRequests?: string[];
-    messages?: any[];
+    messages?: ChatMessage[];
 };

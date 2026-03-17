@@ -6,6 +6,7 @@ import { useUser, SignInButton, SignOutButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SocialPanel } from '../components/SocialPanel';
 import { LieDetectorBoard } from '../components/LieDetectorBoard';
+import { BluffBoard } from '../components/BluffBoard';
 
 export default function Home() {
   const { player, room, connect, createRoom, joinRoom, startGame, gameState } = useGameStore();
@@ -136,6 +137,9 @@ export default function Home() {
             <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('LIE_DETECTOR')} className="px-6 py-2 rounded-full border-2 border-red-500/50 bg-red-500 text-white font-black text-xl hover:bg-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]">
               🤫 Lie Detector 😈
             </motion.button>
+            <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('BLUFF')} className="px-6 py-2 rounded-full border-2 border-purple-500/50 bg-purple-600 text-white font-black text-xl hover:bg-purple-500 transition-all shadow-[0_0_20px_rgba(147,51,234,0.3)]">
+              🕵️‍♂️ BLUFF 🎭
+            </motion.button>
           </div>
         </motion.div>
 
@@ -230,6 +234,21 @@ export default function Home() {
                     <p className="text-2xl md:text-4xl font-black text-yellow-300 leading-tight italic px-4">
                       "{(gameState as any).statement}"
                     </p>
+                  </div>
+                )}
+
+                {room.gameType === 'BLUFF' && (gameState as any).prompt && (
+                  <div className="mb-10 bg-white/5 p-6 rounded-3xl border border-white/10">
+                    <p className="text-white/30 font-black uppercase tracking-widest text-xs mb-2">
+                      The Final Liars were identified! 🎭
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 mt-4">
+                      {(gameState as any).liarIds?.map((lid: string) => (
+                        <span key={lid} className="bg-red-500 text-white px-4 py-1 rounded-full text-sm font-black">
+                          {room.players.find(p => p.id === lid)?.username}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -341,6 +360,7 @@ export default function Home() {
           {room.gameType === 'SNAKE_LADDERS' && <SnakeLaddersBoard />}
           {room.gameType === 'HANGMAN' && <HangmanBoard />}
           {room.gameType === 'LIE_DETECTOR' && <LieDetectorBoard />}
+          {room.gameType === 'BLUFF' && <BluffBoard />}
           {room.gameType === 'LUDO' && <p className="text-4xl font-black">LUDO PARTY COMING SOON! 🎲✨</p>}
         </div>
       </motion.div>

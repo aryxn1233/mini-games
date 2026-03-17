@@ -1,9 +1,10 @@
-import { Room, Player, GameState, ChatMessage, HangmanGameState, LieDetectorGameState } from '../shared/types';
+import { Room, Player, GameState, ChatMessage, HangmanGameState, LieDetectorGameState, BluffGameState } from '../shared/types';
 import { TicTacToeEngine } from '../shared/tic-tac-toe';
 import { SnakeLaddersEngine } from '../shared/snake-ladders';
 import { LudoEngine } from '../shared/ludo';
 import { HangmanEngine } from '../shared/hangman';
 import { LieDetectorEngine } from '../shared/lie-detector';
+import { BluffEngine } from '../shared/bluff';
 
 export class RoomManager {
     private rooms: Map<string, Room> = new Map();
@@ -25,7 +26,7 @@ export class RoomManager {
     joinRoom(code: string, player: Player): Room | null {
         const room = this.rooms.get(code);
         if (!room) return null;
-        if (room.players.length >= 4) return null; // Simple limit
+        if (room.players.length >= 8) return null; // Increased for social deduction games
 
         room.players.push(player);
         this.playerToRoom.set(player.id, code);
@@ -127,6 +128,7 @@ export class RoomManager {
             case 'LUDO': return new LudoEngine();
             case 'HANGMAN': return new HangmanEngine();
             case 'LIE_DETECTOR': return new LieDetectorEngine();
+            case 'BLUFF': return new BluffEngine();
             default: return null;
         }
     }
@@ -148,8 +150,26 @@ export class RoomManager {
             if (lieState.status !== 'REVEALING' && lieState.status !== 'FINISHED') {
                 const hiddenState = { ...lieState };
                 delete hiddenState.correctAnswer;
-                // If it's WAITING (statement submission), even the statement might be hidden if needed,
-                // but here we just need to hide the answer.
+                sanitizedRoom.gameState = hiddenState;
+            }
+        }
+        if (sanitizedRoom.gameType === 'BLUFF' && sanitizedRoom.gameState) {
+            const bluffState = sanitizedRoom.gameState as BluffGameState;
+            if (bluffState.status !== 'REVEALING' && bluffState.status !== 'FINISHED') {
+                const hiddenState = { ...bluffState };
+                const isLiar = bluffState.liarIds.includes(playerId);
+
+                // Hide liarIds from non-liars
+                if (!isLiar) {
+                    delete (hiddenState as any).liarIds;
+                }
+
+                // Hide authorId in shuffledResponses until reveal
+                if (hiddenState.shuffledResponses) {
+                    hiddenState.shuffledResponses = hiddenState.shuffledResponses.map(r => ({
+                        text: r.text
+                    }));
+                }
                 sanitizedRoom.gameState = hiddenState;
             }
         }
