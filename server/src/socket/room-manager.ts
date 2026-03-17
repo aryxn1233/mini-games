@@ -1,4 +1,4 @@
-import { Room, Player, GameState } from '../shared/types';
+import { Room, Player, GameState, ChatMessage } from '../shared/types';
 import { TicTacToeEngine } from '../shared/tic-tac-toe';
 import { SnakeLaddersEngine } from '../shared/snake-ladders';
 import { LudoEngine } from '../shared/ludo';
@@ -111,7 +111,7 @@ export class RoomManager {
 
         if (!room.messages) room.messages = [];
         room.messages.push(message);
-        
+
         // Keep only last 50 messages
         if (room.messages.length > 50) {
             room.messages.shift();
@@ -134,8 +134,8 @@ export class RoomManager {
         const sanitizedRoom = { ...room };
         if (sanitizedRoom.gameType === 'HANGMAN' && sanitizedRoom.gameState) {
             const hangmanState = sanitizedRoom.gameState as HangmanGameState;
-            // Hide the secret word from everyone except the setter
-            if (playerId !== hangmanState.setterId) {
+            // Hide the secret word from everyone except the setter, UNLESS the game is finished
+            if (playerId !== hangmanState.setterId && hangmanState.status !== 'FINISHED') {
                 const hiddenState = { ...hangmanState };
                 delete hiddenState.word;
                 sanitizedRoom.gameState = hiddenState;

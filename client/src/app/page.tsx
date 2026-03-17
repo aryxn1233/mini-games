@@ -383,7 +383,7 @@ function HangmanBoard() {
         </div>
 
         <HangmanKeyboard
-          disabled={player?.id !== hangmanState.guesserId || hangmanState.status === 'FINISHED'}
+          disabled={player?.id === hangmanState.setterId || hangmanState.status === 'FINISHED'}
           guessedLetters={[...(hangmanState.guessedLetters || []), ...(hangmanState.wrongLetters || [])]}
           onGuess={(letter) => makeMove({ letter })}
         />
@@ -391,12 +391,10 @@ function HangmanBoard() {
 
       <div className="flex flex-col items-center gap-6 card bg-white/10 p-6 md:p-10 min-w-full md:min-w-[300px]">
         <h3 className="text-xl md:text-3xl font-black text-center">
-          {player?.id === hangmanState.guesserId ? (
-            <span className="text-yellow-300 animate-pulse">YOUR TURN TO GUESS! 🕵️‍♂️</span>
-          ) : player?.id === hangmanState.setterId ? (
+          {player?.id === hangmanState.setterId ? (
             <span className="text-cyan-300">WATCH THEM FAIL! 😈</span>
           ) : (
-            <span className="text-white/50">SPECTATING... 🍿</span>
+            <span className="text-yellow-300 animate-pulse">YOUR TURN TO GUESS! 🕵️‍♂️</span>
           )}
         </h3>
 
