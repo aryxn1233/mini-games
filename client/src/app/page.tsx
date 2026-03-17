@@ -346,7 +346,7 @@ export default function Home() {
         </motion.button>
 
         <div className="bg-black/20 rounded-3xl p-6 md:p-12 flex flex-col items-center justify-center min-h-[500px] mt-8 overflow-hidden relative">
-          {gameState && (
+          {gameState && room.gameType !== 'BLUFF' && (
             <div className="mb-8 bg-white/10 px-6 py-2 rounded-full border border-white/20 shadow-xl flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full animate-pulse ${gameState.currentTurn === player?.id ? 'bg-green-400' : 'bg-red-400'}`} />
               <span className="text-xl font-black uppercase tracking-widest text-white/90">
