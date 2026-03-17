@@ -318,6 +318,14 @@ export default function Home() {
           </h2>
         </div>
 
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          onClick={() => useGameStore.getState().resetRoom()}
+          className="absolute top-4 left-4 z-10 bg-white/10 hover:bg-white/20 text-white font-black px-4 py-2 rounded-full border border-white/10 uppercase text-xs flex items-center gap-2 transition-all"
+        >
+          Lobby 🏠
+        </motion.button>
+
         <div className="bg-black/20 rounded-3xl p-6 md:p-12 flex flex-col items-center justify-center min-h-[500px] mt-8 overflow-hidden relative">
           {gameState && (
             <div className="mb-8 bg-white/10 px-6 py-2 rounded-full border border-white/20 shadow-xl flex items-center gap-3">
