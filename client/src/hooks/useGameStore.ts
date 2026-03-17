@@ -9,7 +9,7 @@ interface GameStore {
     gameState: GameState | null;
     messages: any[];
     error: string | null;
-    
+
     connect: (username: string) => void;
     createRoom: () => void;
     joinRoom: (code: string) => void;
@@ -39,9 +39,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
             set({ socket, player });
         });
 
-        socket.on('room_created', (room: Room) => set({ room, messages: room.messages || [] }));
-        socket.on('room_updated', (room: Room) => set({ room, messages: room.messages || [] }));
-        socket.on('game_started', (room: Room) => set({ room, gameState: room.gameState, messages: room.messages || [] }));
+        socket.on('room_created', (room: Room) => set({ room, messages: (room as any).messages || [] }));
+        socket.on('room_updated', (room: Room) => set({ room, messages: (room as any).messages || [] }));
+        socket.on('game_started', (room: Room) => set({ room, gameState: room.gameState, messages: (room as any).messages || [] }));
         socket.on('game_state_updated', (gameState: GameState) => set({ gameState }));
         socket.on('new_message', (message: any) => {
             set(state => ({ messages: [...state.messages, message] }));

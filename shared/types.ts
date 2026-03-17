@@ -27,4 +27,6 @@ export type Room = {
     status: 'WAITING' | 'PLAYING';
     gameType?: string;
     gameState?: GameState;
+    rematchRequests?: string[];
+    messages?: any[];
 };

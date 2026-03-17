@@ -29,7 +29,7 @@ export default function Home() {
       <main className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="absolute top-10 left-10 animate-float text-4xl">🎮</div>
         <div className="absolute bottom-10 right-10 animate-float text-4xl" style={{ animationDelay: '2s' }}>🎲</div>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="card max-w-md w-full text-center"
@@ -111,9 +111,9 @@ export default function Home() {
             <p className="text-lg md:text-2xl font-bold text-white/70">Wait for squad... {room.players.length}/4! 🕺</p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
-            <motion.button 
-              whileHover={{ scale: 1.1 }} 
-              onClick={() => useGameStore.getState().leaveRoom()} 
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              onClick={() => useGameStore.getState().leaveRoom()}
               className="bg-white/10 hover:bg-white/20 text-white font-black px-6 py-2 rounded-full border border-white/20 uppercase text-sm"
             >
               Go to Lobby 🏠
@@ -197,18 +197,18 @@ export default function Home() {
                   {['🎉', '✨', '🔥', '💎', '⭐', '🎈'][i % 6]}
                 </motion.div>
               ))}
-              
+
               <div className="relative z-10 px-6">
                 <span className="text-6xl md:text-9xl mb-4 block animate-bounce">
                   {gameState.winnerId === player?.id ? '🏆' : !gameState.winnerId ? '🤝' : '💀'}
                 </span>
-                
+
                 <h2 className="text-4xl md:text-7xl font-black mb-6 md:mb-10 candy-text uppercase tracking-tighter">
-                  {gameState.winnerId === player?.id 
-                    ? 'YOU WON!!!' 
-                    : !gameState.winnerId 
-                    ? "IT'S A DRAW!" 
-                    : 'YOU LOST...'}
+                  {gameState.winnerId === player?.id
+                    ? 'YOU WON!!!'
+                    : !gameState.winnerId
+                      ? "IT'S A DRAW!"
+                      : 'YOU LOST...'}
                 </h2>
 
                 {room.gameType === 'HANGMAN' && (gameState as any).word && (
@@ -225,13 +225,12 @@ export default function Home() {
                   </h3>
                   <div className="space-y-4">
                     {room.players.map((p) => (
-                      <div 
-                        key={p.id} 
-                        className={`flex items-center justify-between p-4 rounded-2xl border-4 transition-all ${
-                          p.id === gameState.winnerId 
-                            ? 'bg-yellow-400/20 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]' 
-                            : 'bg-white/5 border-white/10'
-                        }`}
+                      <div
+                        key={p.id}
+                        className={`flex items-center justify-between p-4 rounded-2xl border-4 transition-all ${p.id === gameState.winnerId
+                          ? 'bg-yellow-400/20 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
+                          : 'bg-white/5 border-white/10'
+                          }`}
                       >
                         <div className="flex items-center gap-4">
                           <span className="text-3xl">{p.id === gameState.winnerId ? '👑' : '👾'}</span>
@@ -240,10 +239,10 @@ export default function Home() {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          {room.rematchRequests?.includes(p.id) && (
-                            <motion.span 
-                              initial={{ scale: 0 }} 
-                              animate={{ scale: 1 }} 
+                          {(room as any).rematchRequests?.includes(p.id) && (
+                            <motion.span
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
                               className="bg-green-500 text-white text-xs font-black px-3 py-1 rounded-full animate-bounce shadow-lg"
                             >
                               INVITE SENT! 💌
@@ -257,19 +256,18 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => useGameStore.getState().requestRematch()}
-                    disabled={room.rematchRequests?.includes(player?.id || '')}
-                    className={`btn-primary text-xl md:text-3xl py-4 md:py-6 flex flex-col items-center gap-1 ${
-                      room.rematchRequests?.includes(player?.id || '') ? 'opacity-50 cursor-not-allowed grayscale' : ''
-                    }`}
+                    disabled={(room as any).rematchRequests?.includes(player?.id || '')}
+                    className={`btn-primary text-xl md:text-3xl py-4 md:py-6 flex flex-col items-center gap-1 ${(room as any).rematchRequests?.includes(player?.id || '') ? 'opacity-50 cursor-not-allowed grayscale' : ''
+                      }`}
                   >
                     <span className="text-[10px] md:text-sm font-black text-purple-900/50 uppercase tracking-widest">Ready for Round 2?</span>
-                    <span>{room.rematchRequests?.includes(player?.id || '') ? 'SENT! ⏳' : 'REMATCH! 🔄'}</span>
+                    <span>{(room as any).rematchRequests?.includes(player?.id || '') ? 'SENT! ⏳' : 'REMATCH! 🔄'}</span>
                   </motion.button>
 
                   <motion.button
@@ -285,7 +283,7 @@ export default function Home() {
 
                 <div className="mt-8">
                   <p className="text-white/40 font-black uppercase text-sm tracking-widest">
-                    {room.rematchRequests?.length || 0} / {room.players.length} Players ready for Rematch
+                    {(room as any).rematchRequests?.length || 0} / {room.players.length} Players ready for Rematch
                   </p>
                 </div>
               </div>
@@ -310,8 +308,8 @@ export default function Home() {
             <div className="mb-8 bg-white/10 px-6 py-2 rounded-full border border-white/20 shadow-xl flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full animate-pulse ${gameState.currentTurn === player?.id ? 'bg-green-400' : 'bg-red-400'}`} />
               <span className="text-xl font-black uppercase tracking-widest text-white/90">
-                {gameState.currentTurn === player?.id 
-                  ? "IT'S YOUR TURN! ⚡" 
+                {gameState.currentTurn === player?.id
+                  ? "IT'S YOUR TURN! ⚡"
                   : `Waiting for ${room.players.find(p => p.id === gameState.currentTurn)?.username || 'Opponent'}... 😴`}
               </span>
             </div>
@@ -329,7 +327,7 @@ export default function Home() {
 function HangmanBoard() {
   const { gameState, makeMove, player } = useGameStore();
   const [wordInput, setWordInput] = useState('');
-  
+
   if (!gameState) return null;
   const hangmanState = gameState as any;
 
@@ -340,14 +338,14 @@ function HangmanBoard() {
         <h3 className="text-3xl font-black text-white/50 uppercase">Pick the Secret Word! 🧛‍♂️</h3>
         {player?.id === hangmanState.setterId ? (
           <div className="w-full space-y-4">
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={wordInput}
               onChange={(e) => setWordInput(e.target.value.toUpperCase())}
               placeholder="e.g. ANTIGRAVITY"
               className="w-full bg-white/10 rounded-2xl px-6 py-4 text-2xl font-black text-center focus:ring-4 focus:ring-purple-500 outline-none border-2 border-white/10"
             />
-            <button 
+            <button
               onClick={() => makeMove({ word: wordInput })}
               className="btn-primary w-full py-4 text-2xl"
             >
@@ -370,10 +368,10 @@ function HangmanBoard() {
     <div className="flex flex-col lg:flex-row items-center gap-12 w-full justify-around h-full py-4">
       <div className="flex flex-col items-center gap-10 w-full max-w-xl">
         <HangmanDrawing wrongCount={hangmanState.wrongLetters?.length || 0} />
-        
+
         <div className="flex flex-wrap justify-center gap-2 md:gap-4">
           {(hangmanState.maskedWord || []).map((letter: string, i: number) => (
-            <motion.div 
+            <motion.div
               key={i}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -384,7 +382,7 @@ function HangmanBoard() {
           ))}
         </div>
 
-        <HangmanKeyboard 
+        <HangmanKeyboard
           disabled={player?.id !== hangmanState.guesserId || hangmanState.status === 'FINISHED'}
           guessedLetters={[...(hangmanState.guessedLetters || []), ...(hangmanState.wrongLetters || [])]}
           onGuess={(letter) => makeMove({ letter })}
@@ -439,7 +437,7 @@ function HangmanDrawing({ wrongCount }: { wrongCount: number }) {
       <line x1="50" y1="230" x2="50" y2="20" stroke="white" strokeWidth="8" />
       <line x1="50" y1="20" x2="150" y2="20" stroke="white" strokeWidth="8" />
       <line x1="150" y1="20" x2="150" y2="45" stroke="white" strokeWidth="8" />
-      
+
       {/* Body Parts */}
       {parts.slice(0, wrongCount)}
     </svg>
@@ -457,13 +455,12 @@ function HangmanKeyboard({ disabled, guessedLetters, onGuess }: { disabled: bool
           whileTap={!disabled && !guessedLetters.includes(l) ? { scale: 0.9 } : {}}
           onClick={() => onGuess(l)}
           disabled={disabled || guessedLetters.includes(l)}
-          className={`aspect-square rounded-lg md:rounded-xl font-black text-sm md:text-xl transition-all border-2 ${
-            guessedLetters.includes(l) 
-              ? 'bg-white/5 border-white/5 text-white/10' 
-              : disabled 
-              ? 'bg-white/5 border-white/10 text-white/20' 
+          className={`aspect-square rounded-lg md:rounded-xl font-black text-sm md:text-xl transition-all border-2 ${guessedLetters.includes(l)
+            ? 'bg-white/5 border-white/5 text-white/10'
+            : disabled
+              ? 'bg-white/5 border-white/10 text-white/20'
               : 'bg-white/10 border-white/20 text-white hover:bg-purple-600 hover:border-purple-400'
-          }`}
+            }`}
         >
           {l}
         </motion.button>
@@ -485,9 +482,8 @@ function TicTacToeBoard() {
           whileHover={!cell && gameState.currentTurn === useGameStore.getState().player?.id ? { scale: 1.1, rotate: [0, 5, -5, 0] } : {}}
           whileTap={!cell && gameState.currentTurn === useGameStore.getState().player?.id ? { scale: 0.9 } : {}}
           onClick={() => makeMove({ index: i })}
-          className={`aspect-square bg-white/10 rounded-[24px] md:rounded-[40px] text-4xl md:text-6xl font-black flex items-center justify-center transition-all border-2 md:border-4 border-white/10 shadow-2xl ${
-            !cell && gameState.currentTurn === useGameStore.getState().player?.id ? 'hover:bg-white/20 cursor-pointer' : 'opacity-80 cursor-not-allowed'
-          }`}
+          className={`aspect-square bg-white/10 rounded-[24px] md:rounded-[40px] text-4xl md:text-6xl font-black flex items-center justify-center transition-all border-2 md:border-4 border-white/10 shadow-2xl ${!cell && gameState.currentTurn === useGameStore.getState().player?.id ? 'hover:bg-white/20 cursor-pointer' : 'opacity-80 cursor-not-allowed'
+            }`}
         >
           {cell === 'X' && (
             <motion.span
