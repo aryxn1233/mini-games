@@ -50,11 +50,11 @@ export class BluffCardEngine implements IGameEngine {
             return { newState, valid: false, error: "Game is already finished!" };
         }
 
-        if (playerId !== newState.currentTurn) {
+        const { action } = move;
+
+        if (action !== 'SHOW' && playerId !== newState.currentTurn) {
             return { newState, valid: false, error: "It's not your turn!" };
         }
-
-        const { action } = move;
 
         switch (action) {
             case 'PLAY':
