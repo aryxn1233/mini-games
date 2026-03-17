@@ -48,11 +48,11 @@ export class SnakeLaddersEngine implements IGameEngine {
 
         board[playerId] = newPos;
 
-        let status = currentState.status;
+        let finalStatus: any = currentState.status;
         let winnerId = currentState.winnerId;
 
         if (newPos === 100) {
-            status = 'FINISHED';
+            finalStatus = 'FINISHED';
             winnerId = playerId;
         }
 
@@ -60,7 +60,7 @@ export class SnakeLaddersEngine implements IGameEngine {
             newState: {
                 ...currentState,
                 board,
-                status,
+                status: finalStatus,
                 winnerId,
                 lastMove: { dice, originalPos: currentState.board[playerId], newPos },
             },

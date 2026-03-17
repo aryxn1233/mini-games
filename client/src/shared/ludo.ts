@@ -69,11 +69,11 @@ export class LudoEngine implements IGameEngine {
         // TODO: Capture logic, turn switching, and win detection
         // For now, simple update
 
-        let status = currentState.status;
+        let finalStatus: any = currentState.status;
         let winnerId = currentState.winnerId;
 
         if (newTokens.every(t => t.position === 58)) {
-            status = 'FINISHED';
+            finalStatus = 'FINISHED';
             winnerId = playerId;
         }
 
@@ -81,7 +81,7 @@ export class LudoEngine implements IGameEngine {
             newState: {
                 ...currentState,
                 board: newBoard,
-                status,
+                status: finalStatus,
                 winnerId,
                 lastMove: move,
             },

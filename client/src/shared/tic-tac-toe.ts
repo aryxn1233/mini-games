@@ -33,14 +33,14 @@ export class TicTacToeEngine implements IGameEngine {
         board[index] = mark;
 
         const winnerMark = this.calculateWinner(board);
-        let status = currentState.status;
+        let finalStatus: any = currentState.status;
         let winnerId = currentState.winnerId;
 
         if (winnerMark) {
-            status = 'FINISHED';
+            finalStatus = 'FINISHED';
             winnerId = playerId; // The player who made the winning move
         } else if (board.every(cell => cell !== null)) {
-            status = 'FINISHED'; // Draw
+            finalStatus = 'FINISHED'; // Draw
         }
 
         // Toggle turn (find next player in the room)
@@ -52,7 +52,7 @@ export class TicTacToeEngine implements IGameEngine {
             newState: {
                 ...currentState,
                 board,
-                status,
+                status: finalStatus,
                 winnerId,
                 lastMove: move,
             },
