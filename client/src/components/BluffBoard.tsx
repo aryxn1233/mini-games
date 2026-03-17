@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore } from '../../hooks/useGameStore';
-import { BluffGameState } from '../../shared/types';
+import { useGameStore } from '../hooks/useGameStore';
+import { BluffGameState } from '../shared/types';
 import { supabase } from '../lib/supabase';
-import Confetti from 'react-confetti';
+
 
 export function BluffBoard() {
     const { gameState, makeMove, player, room } = useGameStore();
@@ -142,10 +142,10 @@ export function BluffBoard() {
                                 whileTap={!hasVoted ? { scale: 0.95 } : {}}
                                 onClick={() => !hasVoted && makeMove({ votedPlayerId: p.id })}
                                 className={`p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all flex flex-col items-center gap-2 ${bluffState.votes[player.id] === p.id
-                                        ? 'bg-purple-600 border-purple-400 shadow-[0_0_20px_rgba(147,51,234,0.5)]'
-                                        : hasVoted
-                                            ? 'bg-white/2 border-white/5 opacity-50'
-                                            : 'bg-white/5 border-white/10 hover:border-purple-500'
+                                    ? 'bg-purple-600 border-purple-400 shadow-[0_0_20px_rgba(147,51,234,0.5)]'
+                                    : hasVoted
+                                        ? 'bg-white/2 border-white/5 opacity-50'
+                                        : 'bg-white/5 border-white/10 hover:border-purple-500'
                                     }`}
                             >
                                 <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-xl md:text-3xl font-black text-white shadow-xl">
