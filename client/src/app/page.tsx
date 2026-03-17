@@ -222,6 +222,17 @@ export default function Home() {
                   </div>
                 )}
 
+                {room.gameType === 'LIE_DETECTOR' && (gameState as any).statement && (
+                  <div className="mb-10 bg-white/5 p-6 rounded-3xl border border-white/10">
+                    <p className="text-white/30 font-black uppercase tracking-widest text-xs mb-2">
+                      The Final Secret Was a {(gameState as any).correctAnswer}
+                    </p>
+                    <p className="text-2xl md:text-4xl font-black text-yellow-300 leading-tight italic px-4">
+                      "{(gameState as any).statement}"
+                    </p>
+                  </div>
+                )}
+
                 {/* Leaderboard Section */}
                 <div className="bg-white/10 rounded-3xl p-6 mb-10 border border-white/10 shadow-2xl">
                   <h3 className="text-2xl font-black text-white/50 uppercase tracking-widest mb-6 border-b border-white/10 pb-4">

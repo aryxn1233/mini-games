@@ -7,7 +7,7 @@ export type Player = {
 };
 
 export type GameState = {
-    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED';
+    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED' | 'VOTING' | 'REVEALING';
     winnerId?: string;
     currentTurn?: string;
     board: any;
@@ -20,12 +20,23 @@ export interface IGameEngine {
     checkWinner(state: GameState): string | null;
 }
 
+export interface LieDetectorGameState extends GameState {
+    statementPlayerId: string;
+    statement?: string;
+    status: 'WAITING' | 'VOTING' | 'REVEALING' | 'FINISHED';
+    votes: { [playerId: string]: 'TRUTH' | 'LIE' };
+    correctAnswer?: 'TRUTH' | 'LIE';
+    scores: { [playerId: string]: number };
+    currentRound: number;
+    totalRounds: number;
+}
+
 export type Room = {
     id: string;
     code: string;
     players: Player[];
     status: 'WAITING' | 'PLAYING';
-    gameType?: string;
+    gameType?: 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR';
     gameState?: GameState;
     rematchRequests?: string[];
     messages?: any[];
