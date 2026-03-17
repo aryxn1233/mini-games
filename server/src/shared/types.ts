@@ -7,7 +7,7 @@ export type Player = {
 };
 
 export type GameState = {
-    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED';
+    status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED' | 'VOTING' | 'REVEALING';
     winnerId?: string;
     currentTurn?: string;
     board: any;
@@ -24,7 +24,18 @@ export interface HangmanGameState extends GameState {
     guesserId: string;
 }
 
-export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN';
+export interface LieDetectorGameState extends GameState {
+    statementPlayerId: string;
+    statement?: string;
+    status: 'WAITING' | 'VOTING' | 'REVEALING' | 'FINISHED';
+    votes: { [playerId: string]: 'TRUTH' | 'LIE' };
+    correctAnswer?: 'TRUTH' | 'LIE';
+    scores: { [playerId: string]: number };
+    currentRound: number;
+    totalRounds: number;
+}
+
+export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR';
 
 export interface IGameEngine {
     initialize(players: Player[]): GameState;

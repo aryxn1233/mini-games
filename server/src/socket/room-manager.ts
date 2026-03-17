@@ -1,9 +1,9 @@
-import { Room, Player, GameState, ChatMessage } from '../shared/types';
+import { Room, Player, GameState, ChatMessage, HangmanGameState, LieDetectorGameState } from '../shared/types';
 import { TicTacToeEngine } from '../shared/tic-tac-toe';
 import { SnakeLaddersEngine } from '../shared/snake-ladders';
 import { LudoEngine } from '../shared/ludo';
 import { HangmanEngine } from '../shared/hangman';
-import { HangmanGameState } from '../shared/types';
+import { LieDetectorEngine } from '../shared/lie-detector';
 
 export class RoomManager {
     private rooms: Map<string, Room> = new Map();
@@ -126,6 +126,7 @@ export class RoomManager {
             case 'SNAKE_LADDERS': return new SnakeLaddersEngine();
             case 'LUDO': return new LudoEngine();
             case 'HANGMAN': return new HangmanEngine();
+            case 'LIE_DETECTOR': return new LieDetectorEngine();
             default: return null;
         }
     }
@@ -138,6 +139,17 @@ export class RoomManager {
             if (playerId !== hangmanState.setterId && hangmanState.status !== 'FINISHED') {
                 const hiddenState = { ...hangmanState };
                 delete hiddenState.word;
+                sanitizedRoom.gameState = hiddenState;
+            }
+        }
+        if (sanitizedRoom.gameType === 'LIE_DETECTOR' && sanitizedRoom.gameState) {
+            const lieState = sanitizedRoom.gameState as LieDetectorGameState;
+            // Hide the correct answer and the statement player's intent until revealing
+            if (lieState.status !== 'REVEALING' && lieState.status !== 'FINISHED') {
+                const hiddenState = { ...lieState };
+                delete hiddenState.correctAnswer;
+                // If it's WAITING (statement submission), even the statement might be hidden if needed,
+                // but here we just need to hide the answer.
                 sanitizedRoom.gameState = hiddenState;
             }
         }

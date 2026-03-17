@@ -5,6 +5,7 @@ import { useGameStore } from '../hooks/useGameStore';
 import { useUser, SignInButton, SignOutButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SocialPanel } from '../components/SocialPanel';
+import { LieDetectorBoard } from '../components/LieDetectorBoard';
 
 export default function Home() {
   const { player, room, connect, createRoom, joinRoom, startGame, gameState } = useGameStore();
@@ -131,6 +132,9 @@ export default function Home() {
             </motion.button>
             <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('HANGMAN')} className="px-6 py-2 rounded-full border-2 border-yellow-500/50 bg-yellow-400 text-purple-900 font-black text-xl hover:bg-yellow-300 transition-all shadow-[0_0_20px_rgba(250,204,21,0.3)]">
               🧛‍♂️ Hangman Party 🕵️‍♂️
+            </motion.button>
+            <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('LIE_DETECTOR')} className="px-6 py-2 rounded-full border-2 border-red-500/50 bg-red-500 text-white font-black text-xl hover:bg-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+              🤫 Lie Detector 😈
             </motion.button>
           </div>
         </motion.div>
@@ -317,6 +321,7 @@ export default function Home() {
           {room.gameType === 'TIC_TAC_TOE' && <TicTacToeBoard />}
           {room.gameType === 'SNAKE_LADDERS' && <SnakeLaddersBoard />}
           {room.gameType === 'HANGMAN' && <HangmanBoard />}
+          {room.gameType === 'LIE_DETECTOR' && <LieDetectorBoard />}
           {room.gameType === 'LUDO' && <p className="text-4xl font-black">LUDO PARTY COMING SOON! 🎲✨</p>}
         </div>
       </motion.div>
