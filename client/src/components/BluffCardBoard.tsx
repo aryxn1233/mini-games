@@ -224,18 +224,23 @@ export function BluffCardBoard() {
                     )}
                 </div>
 
-                {/* Fanned Player Hand Area */}
+                {/* Fanned Player Hand Area - Scrollable on mobile */}
                 <div
-                    className="relative w-full h-40 md:h-72 mt-4 flex items-center justify-center transition-all duration-500"
+                    className="w-full h-48 md:h-80 mt-2 md:mt-4 overflow-x-auto overflow-y-hidden px-4 py-8 touch-pan-x custom-scrollbar"
                     onMouseEnter={() => setIsHoveringHand(true)}
                     onMouseLeave={() => setIsHoveringHand(false)}
                     onTouchStart={() => setIsHoveringHand(true)}
                 >
-                    <div className="relative flex items-center justify-center w-full">
+                    <div
+                        className="relative h-full flex items-center justify-center mx-auto"
+                        style={{
+                            minWidth: `${Math.max(100, myHand.length * (isHoveringHand ? 50 : 35) + 100)}px`,
+                        }}
+                    >
                         {myHand.map((card, i) => (
                             <div
                                 key={`${card.suit}-${card.rank}-${i}`}
-                                className="absolute transition-all duration-300 transform-gpu"
+                                className="absolute transition-all duration-500 transform-gpu"
                                 style={getCardStyle(i, myHand.length)}
                             >
                                 <Card
@@ -243,16 +248,21 @@ export function BluffCardBoard() {
                                     isSelected={isCardSelected(card)}
                                     onClick={() => toggleCardSelection(card)}
                                     className="hover:z-[100]"
+                                    compact={myHand.length > 8}
                                 />
                             </div>
                         ))}
                     </div>
                     {myHand.length === 0 && !bcState.finishedPlayers.includes(player.id) && (
-                        <div className="text-white/10 text-xl md:text-3xl font-black uppercase tracking-[0.2em]">dealing cards...</div>
+                        <div className="flex justify-center items-center h-full">
+                            <div className="text-white/10 text-xl md:text-3xl font-black uppercase tracking-[0.2em] animate-pulse">dealing cards...</div>
+                        </div>
                     )}
                     {bcState.finishedPlayers.includes(player.id) && (
-                        <div className="text-green-400 text-xl md:text-4xl font-black uppercase bg-green-500/10 px-6 md:px-12 py-3 md:py-6 rounded-full border-2 border-green-500/20 shadow-[0_0_40px_rgba(34,197,94,0.1)]">
-                            FINISHED! #{bcState.finishedPlayers.indexOf(player.id) + 1} 🏅
+                        <div className="flex justify-center items-center h-full">
+                            <div className="text-green-400 text-xl md:text-4xl font-black uppercase bg-green-500/10 px-6 md:px-12 py-3 md:py-6 rounded-full border-2 border-green-500/20 shadow-[0_0_40px_rgba(34,197,94,0.1)]">
+                                FINISHED! #{bcState.finishedPlayers.indexOf(player.id) + 1} 🏅
+                            </div>
                         </div>
                     )}
                 </div>
