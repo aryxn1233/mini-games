@@ -1,4 +1,4 @@
-import { Player, BluffGameState, IGameEngine } from './types';
+import { Player, BluffGameState, IGameEngine, GameState } from './types';
 
 const DEFAULT_PROMPTS = [
     { id: '1', text: 'What is the most embarrassing thing you did in school?', category: 'funny' },
@@ -37,8 +37,8 @@ export class BluffEngine implements IGameEngine {
         };
     }
 
-    makeMove(playerId: string, move: any, currentState: BluffGameState): { newState: BluffGameState; valid: boolean; error?: string } {
-        const newState = { ...currentState };
+    makeMove(playerId: string, move: any, state: GameState): { newState: BluffGameState; valid: boolean; error?: string } {
+        const newState = { ...(state as BluffGameState) };
 
         // 1. Submit Response
         if (newState.status === 'SUBMITTING') {

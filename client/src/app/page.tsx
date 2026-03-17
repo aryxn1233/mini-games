@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SocialPanel } from '../components/SocialPanel';
 import { LieDetectorBoard } from '../components/LieDetectorBoard';
 import { BluffBoard } from '../components/BluffBoard';
+import { BluffCardBoard } from '../components/BluffCardBoard';
 
 export default function Home() {
   const { player, room, connect, createRoom, joinRoom, startGame, gameState } = useGameStore();
@@ -140,6 +141,9 @@ export default function Home() {
             <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('BLUFF')} className="px-6 py-2 rounded-full border-2 border-purple-500/50 bg-purple-600 text-white font-black text-xl hover:bg-purple-500 transition-all shadow-[0_0_20px_rgba(147,51,234,0.3)]">
               🕵️‍♂️ BLUFF 🎭
             </motion.button>
+            <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('BLUFF_CARD')} className="px-6 py-2 rounded-full border-2 border-indigo-500/50 bg-indigo-600 text-white font-black text-xl hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)]">
+              🃏 BLUFF CARD 🎭
+            </motion.button>
           </div>
         </motion.div>
 
@@ -247,6 +251,24 @@ export default function Home() {
                         <span key={lid} className="bg-red-500 text-white px-4 py-1 rounded-full text-sm font-black">
                           {room.players.find(p => p.id === lid)?.username}
                         </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {room.gameType === 'BLUFF_CARD' && (
+                  <div className="mb-10 bg-white/5 p-6 rounded-3xl border border-white/10">
+                    <p className="text-white/30 font-black uppercase tracking-widest text-xs mb-2">
+                      Final Rankings 🏅
+                    </p>
+                    <div className="flex flex-col gap-2 max-w-sm mx-auto">
+                      {(gameState as any).finishedPlayers?.map((pid: string, i: number) => (
+                        <div key={pid} className={`flex justify-between items-center bg-white/10 p-3 rounded-2xl border border-white/10`}>
+                          <span className="font-black text-white">{i + 1}. {room.players.find(p => p.id === pid)?.username}</span>
+                          <span className={`text-[10px] font-black px-3 py-1 rounded-full ${i === 0 ? 'bg-yellow-400 text-black' : 'bg-white/10 text-white/50'}`}>
+                            {i === 0 ? 'WINNER' : 'FINISHED'}
+                          </span>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -361,6 +383,7 @@ export default function Home() {
           {room.gameType === 'HANGMAN' && <HangmanBoard />}
           {room.gameType === 'LIE_DETECTOR' && <LieDetectorBoard />}
           {room.gameType === 'BLUFF' && <BluffBoard />}
+          {room.gameType === 'BLUFF_CARD' && <BluffCardBoard />}
           {room.gameType === 'LUDO' && <p className="text-4xl font-black">LUDO PARTY COMING SOON! 🎲✨</p>}
         </div>
       </motion.div>

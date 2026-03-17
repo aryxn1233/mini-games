@@ -6,6 +6,11 @@ export type Player = {
   isReady: boolean;
 };
 
+export type Card = {
+  suit: 'HEARTS' | 'DIAMONDS' | 'CLUBS' | 'SPADES';
+  rank: string;
+};
+
 export type GameState = {
   status: 'WAITING' | 'STARTING' | 'IN_PROGRESS' | 'FINISHED' | 'VOTING' | 'REVEALING' | 'SUBMITTING';
   winnerId?: string;
@@ -49,7 +54,20 @@ export interface BluffGameState extends GameState {
   timer?: number;
 }
 
-export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR' | 'BLUFF';
+export interface BluffCardGameState extends GameState {
+  hands: { [playerId: string]: Card[] };
+  pile: Card[];
+  currentRank?: string;
+  lastMove?: {
+    playerId: string;
+    cardsPlayed: Card[];
+    declaredRank: string;
+  };
+  passCount: number;
+  finishedPlayers: string[];
+}
+
+export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR' | 'BLUFF' | 'BLUFF_CARD';
 
 export interface IGameEngine {
   initialize(players: Player[]): GameState;

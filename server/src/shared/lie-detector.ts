@@ -1,4 +1,4 @@
-import { Player, LieDetectorGameState, IGameEngine } from './types';
+import { Player, LieDetectorGameState, IGameEngine, GameState } from './types';
 
 export class LieDetectorEngine implements IGameEngine {
     initialize(players: Player[]): LieDetectorGameState {
@@ -19,8 +19,8 @@ export class LieDetectorEngine implements IGameEngine {
         };
     }
 
-    makeMove(playerId: string, move: any, currentState: LieDetectorGameState): { newState: LieDetectorGameState; valid: boolean; error?: string } {
-        const newState = { ...currentState };
+    makeMove(playerId: string, move: any, state: GameState): { newState: LieDetectorGameState; valid: boolean; error?: string } {
+        const newState = { ...(state as LieDetectorGameState) };
 
         // 1. Submit Statement
         if (newState.status === 'WAITING') {

@@ -1,4 +1,4 @@
-import { Player, HangmanGameState, IGameEngine } from './types';
+import { Player, HangmanGameState, IGameEngine, GameState } from './types';
 
 export class HangmanEngine implements IGameEngine {
     initialize(players: Player[]): HangmanGameState {
@@ -25,8 +25,8 @@ export class HangmanEngine implements IGameEngine {
         };
     }
 
-    makeMove(playerId: string, move: any, currentState: HangmanGameState): { newState: HangmanGameState; valid: boolean; error?: string } {
-        const newState = { ...currentState };
+    makeMove(playerId: string, move: any, state: GameState): { newState: HangmanGameState; valid: boolean; error?: string } {
+        const newState = { ...(state as HangmanGameState) };
 
         // 1. Handle Word Setting
         if (newState.status === 'WAITING') {

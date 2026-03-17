@@ -1,10 +1,11 @@
-import { Room, Player, GameState, ChatMessage, HangmanGameState, LieDetectorGameState, BluffGameState } from '../shared/types';
+import { Room, Player, GameState, ChatMessage, HangmanGameState, LieDetectorGameState, BluffGameState, BluffCardGameState } from '../shared/types';
 import { TicTacToeEngine } from '../shared/tic-tac-toe';
 import { SnakeLaddersEngine } from '../shared/snake-ladders';
 import { LudoEngine } from '../shared/ludo';
 import { HangmanEngine } from '../shared/hangman';
 import { LieDetectorEngine } from '../shared/lie-detector';
 import { BluffEngine } from '../shared/bluff';
+import { BluffCardEngine } from '../shared/bluff-card';
 
 export class RoomManager {
     private rooms: Map<string, Room> = new Map();
@@ -129,6 +130,7 @@ export class RoomManager {
             case 'HANGMAN': return new HangmanEngine();
             case 'LIE_DETECTOR': return new LieDetectorEngine();
             case 'BLUFF': return new BluffEngine();
+            case 'BLUFF_CARD': return new BluffCardEngine();
             default: return null;
         }
     }
@@ -172,6 +174,35 @@ export class RoomManager {
                 }
                 sanitizedRoom.gameState = hiddenState;
             }
+        }
+        if (sanitizedRoom.gameType === 'BLUFF_CARD' && sanitizedRoom.gameState) {
+            const bluffCardState = sanitizedRoom.gameState as any;
+            const hiddenState = { ...bluffCardState };
+
+            // Hide other hands
+            const sanitizedHands: { [playerId: string]: any } = {};
+            Object.keys(bluffCardState.hands).forEach(pid => {
+                if (pid === playerId) {
+                    sanitizedHands[pid] = bluffCardState.hands[pid];
+                } else {
+                    // Just send dummy cards of the same length
+                    sanitizedHands[pid] = Array(bluffCardState.hands[pid].length).fill({ suit: 'BACK', rank: 'BACK' });
+                }
+            });
+            hiddenState.hands = sanitizedHands;
+
+            // Hide pile content
+            hiddenState.pileCount = bluffCardState.pile.length;
+            hiddenState.pile = Array(bluffCardState.pile.length).fill({ suit: 'BACK', rank: 'BACK' });
+
+            // Hide last move cards unless revealing
+            if (bluffCardState.status !== 'REVEALING' && hiddenState.lastMove) {
+                const hiddenMove = { ...hiddenState.lastMove };
+                hiddenMove.cardsPlayed = Array(hiddenState.lastMove.cardsPlayed.length).fill({ suit: 'BACK', rank: 'BACK' });
+                hiddenState.lastMove = hiddenMove;
+            }
+
+            sanitizedRoom.gameState = hiddenState;
         }
         return sanitizedRoom;
     }
