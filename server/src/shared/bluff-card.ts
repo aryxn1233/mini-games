@@ -126,15 +126,17 @@ export class BluffCardEngine implements IGameEngine {
         const activePlayerCount = Object.keys(state.hands).length - state.finishedPlayers.length;
 
         if (state.passCount >= activePlayerCount) {
-            // Round ends, clear pile
+            // Round ends, all cards on table are removed from the game (discarded)
+            const lastPlayerId = state.lastMove?.playerId;
             state.pile = [];
             state.currentRank = undefined;
             state.lastMove = undefined;
             state.passCount = 0;
-            // Last person who played (or the person after the last passer?) 
-            // Usually the last person who played starts the next round.
-            // But if everyone passed, the turn stays with whoever was supposed to play next or resets?
-            // "Last player who played cards starts next round"
+
+            // The player who last played cards starts the next round
+            if (lastPlayerId) {
+                state.currentTurn = lastPlayerId;
+            }
         } else {
             this.nextTurn(state);
         }
@@ -150,35 +152,35 @@ export class BluffCardEngine implements IGameEngine {
         const isBluff = state.lastMove.cardsPlayed.some(c => c.rank !== state.lastMove!.declaredRank);
         const lastPlayerId = state.lastMove.playerId;
 
-        state.status = 'REVEALING';
-        // We handle the actual reveal and card pickup in a follow-up or a delay
-        // For now, let's process the logic immediately for simple turn-based flow
-
         if (isBluff) {
-            // Challenger is correct, liar takes pile
+            // Challenger is correct, liar takes ALL cards from the table
             state.hands[lastPlayerId].push(...state.pile);
-            state.currentTurn = lastPlayerId; // Liar starts next round? "Last player who played cards starts next round"
-            // Actually, after a challenge, the loser starts the next round.
+            state.currentTurn = lastPlayerId; // Loser starts next round
         } else {
-            // Challenger is wrong, challenger takes pile
+            // Challenger is wrong, challenger takes ALL cards from the table
             state.hands[playerId].push(...state.pile);
-            state.currentTurn = playerId;
+            state.currentTurn = playerId; // Loser starts next round
         }
 
-        // Reset round state
+        // Round resets immediately according to story
         state.pile = [];
         state.currentRank = undefined;
-        state.lastMove = undefined;
+        // Keep lastMove temporarily for the REVEALING status to work in UI
         state.passCount = 0;
+        state.status = 'IN_PROGRESS'; // Reset to in progress for the new round
 
-        // After picking up cards, if someone was supposedly finished, they might not be anymore? 
-        // No, you can only pick up cards if you lose a challenge. If you finished, you can't be challenged on your last move?
-        // Wait, you CAN be challenged on your last move. If you finish and someone challenges and you bluffed, you pick up the pile and are no longer finished.
+        // Note: The UI will show the reveal based on a brief REVEALING status if we want, 
+        // but for now let's just process the logic.
+        // Actually, let's keep it as IN_PROGRESS but the Board will handle the "REVEALING" 
+        // if we use a timer or if we just want to show the result.
+
+        // Let's stick to the story: "After SHOW: Round resets -> Pile becomes empty"
+        state.lastMove = undefined; // Story says round resets.
+
+        // If someone was finished but pick up cards, they are back in the game
         state.finishedPlayers = state.finishedPlayers.filter(pid => state.hands[pid].length === 0);
 
-        // Check if game is over
         this.checkGameStatus(state);
-
         return { newState: state, valid: true };
     }
 
