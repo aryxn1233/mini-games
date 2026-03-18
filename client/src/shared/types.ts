@@ -63,6 +63,7 @@ export interface BluffCardGameState extends GameState {
     cardsPlayed: Card[];
     declaredRank: string;
   };
+  challengerId?: string;
   passCount: number;
   finishedPlayers: string[];
 }

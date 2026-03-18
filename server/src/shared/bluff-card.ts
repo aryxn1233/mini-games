@@ -52,8 +52,21 @@ export class BluffCardEngine implements IGameEngine {
 
         const { action } = move;
 
+        // Allow SHOW even if it's not our turn (challenging previous move)
+        // Except during REVEALING status or if player already finished.
+        if (newState.status === 'REVEALING') {
+            if (action === 'NEXT_ROUND') {
+                return this.handleNextRound(playerId, newState);
+            }
+            return { newState, valid: false, error: "Game is currently revealing cards!" };
+        }
+
         if (action !== 'SHOW' && playerId !== newState.currentTurn) {
             return { newState, valid: false, error: "It's not your turn!" };
+        }
+
+        if (newState.finishedPlayers.includes(playerId)) {
+            return { newState, valid: false, error: "You have already finished!" };
         }
 
         switch (action) {
@@ -92,7 +105,14 @@ export class BluffCardEngine implements IGameEngine {
             if (index === -1) {
                 return { newState: state, valid: false, error: "You don't have those cards!" };
             }
-            cardsToPlay.push(hand.splice(index, 1)[0]);
+            // Temporarily remove card (actual move confirmed below)
+            cardsToPlay.push(hand[index]);
+        }
+
+        // Actually remove cards from hand
+        for (const cardToPlay of cardsToPlay) {
+            const index = hand.findIndex(c => c.suit === cardToPlay.suit && c.rank === cardToPlay.rank);
+            hand.splice(index, 1);
         }
 
         // Update state
@@ -123,19 +143,29 @@ export class BluffCardEngine implements IGameEngine {
         state.passCount++;
 
         // If all players minus finished players have passed
-        const activePlayerCount = Object.keys(state.hands).length - state.finishedPlayers.length;
+        const activePlayerIds = Object.keys(state.hands).filter(pid => !state.finishedPlayers.includes(pid));
+        const activePlayerCount = activePlayerIds.length;
 
         if (state.passCount >= activePlayerCount) {
             // Round ends, all cards on table are removed from the game (discarded)
-            const lastPlayerId = state.lastMove?.playerId;
+            let lastPlayerId = state.lastMove?.playerId;
             state.pile = [];
             state.currentRank = undefined;
             state.lastMove = undefined;
             state.passCount = 0;
 
             // The player who last played cards starts the next round
-            if (lastPlayerId) {
+            // If the last player who played has finished, the next active player starts.
+            if (lastPlayerId && !state.finishedPlayers.includes(lastPlayerId)) {
                 state.currentTurn = lastPlayerId;
+            } else {
+                // Find next active player to start
+                const playerIds = Object.keys(state.hands);
+                let nextIdx = (playerIds.indexOf(state.currentTurn!) + 1) % playerIds.length;
+                while (state.finishedPlayers.includes(playerIds[nextIdx])) {
+                    nextIdx = (nextIdx + 1) % playerIds.length;
+                }
+                state.currentTurn = playerIds[nextIdx];
             }
         } else {
             this.nextTurn(state);
@@ -149,33 +179,40 @@ export class BluffCardEngine implements IGameEngine {
             return { newState: state, valid: false, error: "Nothing to challenge yet!" };
         }
 
+        // According to rules: "Challenge the last player's move only"
+        // Also "Only the last move is revealed"
+        state.challengerId = playerId;
+        state.status = 'REVEALING';
+
+        return { newState: state, valid: true };
+    }
+
+    private handleNextRound(playerId: string, state: BluffCardGameState): { newState: BluffCardGameState; valid: boolean; error?: string } {
+        if (!state.lastMove || !state.challengerId) return { newState: state, valid: false };
+
         const isBluff = state.lastMove.cardsPlayed.some(c => c.rank !== state.lastMove!.declaredRank);
         const lastPlayerId = state.lastMove.playerId;
+        const challengerId = state.challengerId;
 
         if (isBluff) {
-            // Challenger is correct, liar takes ALL cards from the table
+            // CASE 2: LAST PLAYER WAS BLUFFING
+            // Challenger is CORRECT -> Last player takes ALL cards from the pile
             state.hands[lastPlayerId].push(...state.pile);
-            state.currentTurn = lastPlayerId; // Loser starts next round
+            state.currentTurn = lastPlayerId;
         } else {
-            // Challenger is wrong, challenger takes ALL cards from the table
-            state.hands[playerId].push(...state.pile);
-            state.currentTurn = playerId; // Loser starts next round
+            // CASE 1: LAST PLAYER WAS TRUTHFUL
+            // Challenger is WRONG -> Challenger takes ALL cards from the pile
+            state.hands[challengerId].push(...state.pile);
+            state.currentTurn = challengerId;
         }
 
-        // Round resets immediately according to story
+        // Round resets immediately
         state.pile = [];
         state.currentRank = undefined;
-        // Keep lastMove temporarily for the REVEALING status to work in UI
+        state.lastMove = undefined;
+        state.challengerId = undefined;
         state.passCount = 0;
-        state.status = 'IN_PROGRESS'; // Reset to in progress for the new round
-
-        // Note: The UI will show the reveal based on a brief REVEALING status if we want, 
-        // but for now let's just process the logic.
-        // Actually, let's keep it as IN_PROGRESS but the Board will handle the "REVEALING" 
-        // if we use a timer or if we just want to show the result.
-
-        // Let's stick to the story: "After SHOW: Round resets -> Pile becomes empty"
-        state.lastMove = undefined; // Story says round resets.
+        state.status = 'IN_PROGRESS';
 
         // If someone was finished but pick up cards, they are back in the game
         state.finishedPlayers = state.finishedPlayers.filter(pid => state.hands[pid].length === 0);
