@@ -229,30 +229,42 @@ export function BluffCardBoard() {
                     )}
 
                     <div className="relative w-32 h-48 md:w-40 md:h-56 transform-gpu">
-                        {bcState.pile.length > 0 ? (
-                            bcState.pile.slice(-10).map((_, i) => (
-                                <Card
-                                    key={i}
-                                    suit="BACK"
-                                    rank="?"
-                                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shadow-2xl"
-                                    style={{
-                                        transform: `translate(-50%, -50%) rotate(${i % 2 === 0 ? 1 : -1}deg) translate(${i * 0.4}px, ${i * -0.6}px)`,
-                                        zIndex: i
-                                    }}
-                                    compact
-                                />
-                            ))
-                        ) : (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="w-full h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-white/5 text-xl font-black bg-black/10"
-                            >
-                                <span className="rotate-12">PLACE</span>
-                                <span className="-rotate-12 mt-2">CARDS</span>
-                            </motion.div>
-                        )}
+                        <AnimatePresence>
+                            {bcState.pile.length > 0 ? (
+                                bcState.pile.slice(-8).map((card, i) => (
+                                    <motion.div
+                                        key={`pile-${card.suit}-${card.rank}-${i}`}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
+                                        className="absolute inset-0"
+                                        style={{ zIndex: i }}
+                                    >
+                                        <Card
+                                            suit="BACK"
+                                            rank="?"
+                                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shadow-2xl"
+                                            style={{
+                                                // Precise offsets for a stacked deck look
+                                                transform: `translate(-50%, -50%) translate(${i * 4}px, ${i * -3}px) rotate(${(i % 3 - 1) * 2}deg)`,
+                                            }}
+                                            compact
+                                        />
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <motion.div
+                                    key="empty-pile"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="w-full h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-white/5 text-xl font-black bg-black/10"
+                                >
+                                    <span className="rotate-12">PLACE</span>
+                                    <span className="-rotate-12 mt-2">CARDS</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Current Call Animation */}
                         {bcState.lastMove && bcState.status !== 'REVEALING' && (
@@ -272,48 +284,46 @@ export function BluffCardBoard() {
                         <AnimatePresence>
                             {(bcState.status === 'REVEALING' || (bcState.status === 'IN_PROGRESS' && bcState.challengerId)) && bcState.lastMove && (
                                 <motion.div
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0, opacity: 0 }}
-                                    className="absolute inset-0 z-[100] flex flex-col items-center justify-center"
+                                    initial={{ scale: 0, opacity: 0, y: 20 }}
+                                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                                    exit={{ scale: 0, opacity: 0, y: 20 }}
+                                    className="absolute inset-0 z-[100] flex flex-col items-center justify-center p-4"
                                 >
-                                    <div className="absolute -inset-96 bg-black/60 backdrop-blur-sm z-[-1]" />
-
-                                    <div className="bg-zinc-900/90 border-2 border-white/10 p-4 md:p-8 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[300px]">
+                                    <div className="bg-zinc-900 border-2 border-white/20 p-4 md:p-8 rounded-[32px] shadow-[0_0_150px_rgba(0,0,0,0.9)] flex flex-col items-center min-w-[320px] backdrop-blur-xl ring-2 ring-white/5">
                                         <div className="mb-6 text-center">
-                                            <div className="bg-purple-600 px-4 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest mb-2 inline-block">Challenge!</div>
-                                            <h2 className="text-xl md:text-2xl font-black text-white uppercase italic">
-                                                {room.players.find(p => p.id === bcState.challengerId)?.username} vs {room.players.find(p => p.id === bcState.lastMove!.playerId)?.username}
+                                            <div className="bg-purple-600 px-4 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest mb-2 inline-block shadow-lg">Challenge!</div>
+                                            <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-tighter">
+                                                {room.players.find(p => p.id === bcState.challengerId)?.username} caught {room.players.find(p => p.id === bcState.lastMove!.playerId)?.username}
                                             </h2>
                                         </div>
 
-                                        <div className="relative h-40 md:h-56 w-28 md:w-40 flex items-center justify-center mb-8">
+                                        <div className="relative h-40 md:h-56 w-28 md:w-40 flex items-center justify-center mb-10 mt-4">
                                             {bcState.lastMove.cardsPlayed.map((c, i) => (
                                                 <Card
                                                     key={i}
                                                     {...c}
-                                                    className="absolute shadow-[0_0_50px_rgba(255,255,255,0.3)]"
+                                                    className="absolute shadow-[0_0_60px_rgba(255,255,255,0.2)]"
                                                     style={{
-                                                        transform: `translateX(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 25}px) rotate(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 8}deg)`,
+                                                        transform: `translateX(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 35}px) rotate(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 10}deg)`,
                                                         zIndex: i
                                                     }}
                                                 />
                                             ))}
                                         </div>
 
-                                        <div className={`px-6 py-3 rounded-2xl border-2 font-black text-lg uppercase tracking-tighter mb-6 ${bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank)
-                                            ? "bg-red-500/20 border-red-500 text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.3)]"
-                                            : "bg-green-500/20 border-green-500 text-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+                                        <div className={`px-8 py-4 rounded-2xl border-2 font-black text-xl uppercase tracking-tighter mb-8 ${bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank)
+                                            ? "bg-red-500/30 border-red-500 text-red-500 shadow-[0_0_50px_rgba(239,68,68,0.4)]"
+                                            : "bg-green-500/30 border-green-500 text-green-500 shadow-[0_0_50px_rgba(34,197,94,0.4)]"
                                             }`}>
                                             {bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank) ? "🔥 BLUFF DETECTED! 🔥" : "✅ IT WAS THE TRUTH! ✅"}
                                         </div>
 
                                         {bcState.status === 'REVEALING' && (
                                             <motion.button
-                                                whileHover={{ scale: 1.05 }}
+                                                whileHover={{ scale: 1.05, y: -2 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={() => makeMove({ action: 'NEXT_ROUND' })}
-                                                className="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl uppercase tracking-wider"
+                                                className="w-full py-5 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] uppercase tracking-wider text-lg border-b-4 border-yellow-800"
                                             >
                                                 CONTINUE 🚀
                                             </motion.button>
