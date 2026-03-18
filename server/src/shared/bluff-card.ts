@@ -198,12 +198,12 @@ export class BluffCardEngine implements IGameEngine {
             // CASE 2: LAST PLAYER WAS BLUFFING
             // Challenger is CORRECT -> Last player takes ALL cards from the pile
             state.hands[lastPlayerId].push(...state.pile);
-            state.currentTurn = lastPlayerId;
+            state.currentTurn = challengerId; // Challenger starts new round
         } else {
             // CASE 1: LAST PLAYER WAS TRUTHFUL
             // Challenger is WRONG -> Challenger takes ALL cards from the pile
             state.hands[challengerId].push(...state.pile);
-            state.currentTurn = challengerId;
+            state.currentTurn = lastPlayerId; // Last player starts new round
         }
 
         // Round resets immediately

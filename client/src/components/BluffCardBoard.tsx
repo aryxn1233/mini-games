@@ -53,6 +53,16 @@ export function BluffCardBoard() {
         }
     }, [bcState.currentTurn, bcState.currentRank]);
 
+    // Auto-advance after reveal
+    useEffect(() => {
+        if (bcState.status === 'REVEALING') {
+            const timer = setTimeout(() => {
+                makeMove({ action: 'NEXT_ROUND' });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [bcState.status]);
+
     const toggleCardSelection = (card: CardType) => {
         const index = selectedCards.findIndex(c => c.suit === card.suit && c.rank === card.rank);
         if (index === -1) {
@@ -311,23 +321,16 @@ export function BluffCardBoard() {
                                             ))}
                                         </div>
 
-                                        <div className={`px-8 py-4 rounded-2xl border-2 font-black text-xl uppercase tracking-tighter mb-8 ${bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank)
+                                        <div className={`px-8 py-4 rounded-2xl border-2 font-black text-xl uppercase tracking-tighter mb-4 ${bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank)
                                             ? "bg-red-500/30 border-red-500 text-red-500 shadow-[0_0_50px_rgba(239,68,68,0.4)]"
                                             : "bg-green-500/30 border-green-500 text-green-500 shadow-[0_0_50px_rgba(34,197,94,0.4)]"
                                             }`}>
                                             {bcState.lastMove.cardsPlayed.some(c => c.rank !== bcState.lastMove!.declaredRank) ? "🔥 BLUFF DETECTED! 🔥" : "✅ IT WAS THE TRUTH! ✅"}
                                         </div>
 
-                                        {bcState.status === 'REVEALING' && (
-                                            <motion.button
-                                                whileHover={{ scale: 1.05, y: -2 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                onClick={() => makeMove({ action: 'NEXT_ROUND' })}
-                                                className="w-full py-5 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] uppercase tracking-wider text-lg border-b-4 border-yellow-800"
-                                            >
-                                                CONTINUE 🚀
-                                            </motion.button>
-                                        )}
+                                        <div className="text-[10px] text-white/30 font-black uppercase tracking-widest animate-pulse">
+                                            Round resetting...
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}
