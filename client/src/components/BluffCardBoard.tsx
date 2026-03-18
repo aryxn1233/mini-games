@@ -37,7 +37,15 @@ export function BluffCardBoard() {
     if (!gameState || !player || !room) return null;
     const bcState = gameState as BluffCardGameState;
     const isMyTurn = bcState.currentTurn === player.id;
-    const myHand = bcState.hands[player.id] || [];
+
+    // Sort hand by rank order
+    const myHand = [...(bcState.hands[player.id] || [])].sort((a, b) => {
+        const rankA = RANKS.indexOf(a.rank);
+        const rankB = RANKS.indexOf(b.rank);
+        if (rankA !== rankB) return rankA - rankB;
+        // Secondary sort by suit name for consistency
+        return a.suit.localeCompare(b.suit);
+    });
 
     useEffect(() => {
         setSelectedCards([]);
