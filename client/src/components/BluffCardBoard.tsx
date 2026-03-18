@@ -134,11 +134,12 @@ export function BluffCardBoard() {
                                     key={i}
                                     suit="BACK"
                                     rank="?"
-                                    className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shadow-2xl`}
+                                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shadow-xl"
                                     style={{
-                                        transform: `translate(-50%, -50%) rotate(${i * 3 - (bcState.pile.length * 1.5)}deg) translate(${i * 1.5}px, ${i * -1.5}px)`,
+                                        transform: `translate(-50%, -50%) rotate(${i % 2 === 0 ? 1 : -1}deg) translate(${i * 0.5}px, ${i * -0.5}px)`,
                                         zIndex: i
                                     }}
+                                    compact
                                 />
                             ))
                         ) : (
@@ -158,9 +159,17 @@ export function BluffCardBoard() {
                                     <div className="bg-purple-600 px-4 md:px-8 py-2 md:py-3 rounded-full text-white font-black text-sm md:text-lg mb-6 shadow-2xl border-2 border-white/20 whitespace-nowrap">
                                         REVEALING {bcState.lastMove.playerId === player.id ? 'YOUR' : 'THEIR'} MOVE!
                                     </div>
-                                    <div className="flex gap-2 md:gap-4 justify-center items-center">
+                                    <div className="relative h-48 w-32 flex items-center justify-center">
                                         {bcState.lastMove.cardsPlayed.map((c, i) => (
-                                            <Card key={i} {...c} className="shadow-[0_0_40px_rgba(255,255,255,0.4)]" />
+                                            <Card
+                                                key={i}
+                                                {...c}
+                                                className="absolute shadow-[0_0_40px_rgba(255,255,255,0.4)]"
+                                                style={{
+                                                    transform: `translateX(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 20}px) rotate(${(i - (bcState.lastMove!.cardsPlayed.length - 1) / 2) * 5}deg)`,
+                                                    zIndex: i
+                                                }}
+                                            />
                                         ))}
                                     </div>
                                 </motion.div>
