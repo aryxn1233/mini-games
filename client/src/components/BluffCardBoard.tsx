@@ -167,29 +167,39 @@ export function BluffCardBoard() {
     return (
         <div className="fixed inset-0 bg-[#0a0a0a] flex flex-col overflow-hidden safe-area-inset">
             {/* Top Bar - Header Info */}
-            <div className="h-16 md:h-20 w-full flex justify-between items-center px-4 md:px-8 bg-black/40 backdrop-blur-md border-b border-white/5 z-50">
-                <div className="flex items-center gap-3">
-                    <div className="bg-yellow-500/10 border border-yellow-500/20 px-3 md:px-5 py-1 md:py-2 rounded-xl">
-                        <span className="text-[10px] md:text-xs font-black text-yellow-500/60 uppercase tracking-widest block leading-none mb-1">Rank to Play</span>
-                        <span className="text-lg md:text-2xl font-black text-yellow-400 leading-none">{bcState.currentRank || 'NOT SET'}</span>
+            {/* Top Bar - Header Info */}
+            <div className="h-16 md:h-20 w-full flex justify-between items-center px-3 md:px-6 bg-black/60 backdrop-blur-xl border-b border-white/10 z-50">
+                {/* Left: Lobby Button */}
+                <div className="flex-1 flex justify-start">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => useGameStore.getState().resetRoom()}
+                        className="bg-white/10 hover:bg-white/20 text-white font-black px-4 py-2 rounded-xl border border-white/10 uppercase text-[10px] md:text-sm flex items-center gap-2 transition-all whitespace-nowrap shadow-lg ring-1 ring-white/5"
+                    >
+                        Lobby 🏠
+                    </motion.button>
+                </div>
+
+                {/* Center: Title & Rank Info */}
+                <div className="flex-[2] flex flex-col items-center">
+                    <h1 className="text-sm md:text-lg font-black text-white italic tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis px-2 leading-tight">
+                        Bluff Card King
+                    </h1>
+                    <div className="flex items-center gap-2 mt-0.5 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded-lg shadow-inner">
+                        <span className="text-[8px] md:text-[10px] font-black text-yellow-500/60 uppercase tracking-widest leading-none">Rank</span>
+                        <span className="text-xs md:text-sm font-black text-yellow-400 leading-none">{bcState.currentRank || 'NOT SET'}</span>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-center">
-                    <h1 className="text-sm md:text-xl font-black text-white italic tracking-tighter uppercase whitespace-nowrap">Bluff Card King</h1>
-                    <div className="hidden md:flex gap-2">
-                        {bcState.finishedPlayers.length > 0 && (
-                            <div className="text-[10px] text-green-400 font-bold uppercase tracking-widest mt-1">
-                                {bcState.finishedPlayers.length} Players Finished
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <div className="bg-purple-500/10 border border-purple-500/20 px-3 md:px-5 py-1 md:py-2 rounded-xl text-right">
-                        <span className="text-[10px] md:text-xs font-black text-purple-500/60 uppercase tracking-widest block leading-none mb-1">Pile size</span>
-                        <span className="text-lg md:text-2xl font-black text-purple-400 leading-none">{bcState.pile.length}</span>
+                {/* Right: Game Stats */}
+                <div className="flex-1 flex justify-end">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">Total Pile</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm md:text-xl font-black text-white leading-none drop-shadow-lg">{bcState.pile.length}</span>
+                            <span className="text-sm md:text-lg">🎴</span>
+                        </div>
                     </div>
                 </div>
             </div>
