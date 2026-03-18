@@ -16,6 +16,7 @@ export function BluffCardBoard() {
     const [declaredRank, setDeclaredRank] = useState<string>('');
     const [showRankPicker, setShowRankPicker] = useState(false);
     const [isHoveringHand, setIsHoveringHand] = useState(false);
+    const [showRules, setShowRules] = useState(false);
 
     useEffect(() => {
         if (gameState?.status === 'FINISHED' && room) {
@@ -193,7 +194,17 @@ export function BluffCardBoard() {
                 </div>
 
                 {/* Right: Game Stats */}
-                <div className="flex-1 flex justify-end">
+                <div className="flex-1 flex items-center justify-end gap-2 md:gap-4">
+                    <motion.button
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setShowRules(true)}
+                        className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-white/40 hover:text-white transition-all shadow-sm group"
+                        title="Game Rules"
+                    >
+                        <span className="text-xl md:text-2xl drop-shadow-md group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">📜</span>
+                    </motion.button>
+
                     <div className="flex flex-col items-end">
                         <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">Total Pile</span>
                         <div className="flex items-center gap-2">
@@ -437,6 +448,88 @@ export function BluffCardBoard() {
                             </button>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            {/* Rules Modal Overlay */}
+            <AnimatePresence>
+                {showRules && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                        onClick={() => setShowRules(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                            className="bg-zinc-900 border-2 border-white/10 p-6 md:p-8 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.5)] max-w-lg w-full relative overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Decorative Background */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 blur-3xl -mr-16 -mt-16" />
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-600/10 blur-3xl -ml-16 -mb-16" />
+
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase">Game Rules 🕵️‍♂️</h2>
+                                    <button
+                                        onClick={() => setShowRules(false)}
+                                        className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+
+                                <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar text-white/80">
+                                    <section>
+                                        <h3 className="text-yellow-500 font-black uppercase tracking-widest text-xs mb-2 italic">Objective</h3>
+                                        <p className="text-sm border-l-2 border-yellow-500/30 pl-3">Be the first player to discard all your cards. The game continues until only one player is left (the loser!).</p>
+                                    </section>
+
+                                    <section>
+                                        <h3 className="text-purple-500 font-black uppercase tracking-widest text-xs mb-2 italic">Turn Actions</h3>
+                                        <div className="space-y-3">
+                                            <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-black text-white uppercase">Player Play (1-4 cards)</span>
+                                                </div>
+                                                <p className="text-[12px] opacity-70">Place cards face-down and declare a rank (e.g., "3 Jacks"). You can tell the truth or **Bluff**!</p>
+                                            </div>
+                                            <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-black text-white uppercase flex items-center gap-2">Show (The Challenge) <span className="text-red-500 text-[10px]">ANYTIME!</span></span>
+                                                </div>
+                                                <p className="text-[12px] opacity-70">Challenge the last player's move. If they were bluffing, they take the pile. If they were honest, **you** take the pile!</p>
+                                            </div>
+                                            <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-black text-white uppercase">Pass</span>
+                                                </div>
+                                                <p className="text-[12px] opacity-70">Skip your turn. If everyone passes, the pile is discarded and the last player to play starts the new round.</p>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section className="bg-indigo-900/20 p-4 rounded-2xl border border-indigo-500/20">
+                                        <h3 className="text-indigo-400 font-black uppercase tracking-widest text-[10px] mb-2 text-center underline">Pro Tip</h3>
+                                        <p className="text-xs italic text-center opacity-80">Cards are sorted automatically by rank and suit in your hand. Use this to track your sets and detect bluffs easier! 🧠</p>
+                                    </section>
+                                </div>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setShowRules(false)}
+                                    className="w-full mt-8 py-4 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl border border-white/10 uppercase tracking-widest transition-all shadow-xl"
+                                >
+                                    Got it! 🚀
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>
