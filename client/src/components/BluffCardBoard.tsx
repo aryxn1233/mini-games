@@ -8,6 +8,7 @@ import { Card } from './Card';
 import { supabase } from '../lib/supabase';
 
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const SUIT_ORDER = ['CLUBS', 'DIAMONDS', 'HEARTS', 'SPADES'];
 
 export function BluffCardBoard() {
     const { gameState, makeMove, player, room } = useGameStore();
@@ -38,13 +39,11 @@ export function BluffCardBoard() {
     const bcState = gameState as BluffCardGameState;
     const isMyTurn = bcState.currentTurn === player.id;
 
-    // Sort hand by rank order
+    // Sort hand by primary rank and secondary suit order
     const myHand = [...(bcState.hands[player.id] || [])].sort((a, b) => {
-        const rankA = RANKS.indexOf(a.rank);
-        const rankB = RANKS.indexOf(b.rank);
-        if (rankA !== rankB) return rankA - rankB;
-        // Secondary sort by suit name for consistency
-        return a.suit.localeCompare(b.suit);
+        const rankDiff = RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
+        if (rankDiff !== 0) return rankDiff;
+        return SUIT_ORDER.indexOf(a.suit) - SUIT_ORDER.indexOf(b.suit);
     });
 
     useEffect(() => {
