@@ -187,7 +187,7 @@ export function BluffCardBoard() {
             </div>
 
             {/* Main Game Area */}
-            <div className="flex-1 relative w-full flex items-center justify-center p-4">
+            <div className="flex-1 relative w-full flex items-center justify-center p-4 z-20">
                 {/* Board / TableBackground */}
                 <div className="absolute inset-4 md:inset-10 rounded-[100px] md:rounded-[200px] bg-[#073d1c] border-[8px] md:border-[16px] border-[#3d2b1f] shadow-[inset_0_0_100px_rgba(0,0,0,0.8),0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
                     {/* Felt Texture / Radial Gradient */}
@@ -213,7 +213,7 @@ export function BluffCardBoard() {
                 </div>
 
                 {/* Central Pile Area */}
-                <div className="relative z-10 flex flex-col items-center justify-center scale-90 md:scale-110">
+                <div className="relative z-[50] flex flex-col items-center justify-center scale-90 md:scale-110">
                     {/* Ranking List Button (Top Left of board) */}
                     {bcState.finishedPlayers.length > 0 && (
                         <div className="absolute bottom-full mb-10 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 min-w-[200px] z-[60]">
@@ -342,7 +342,7 @@ export function BluffCardBoard() {
             </div>
 
             {/* Bottom Section - Hand & Actions */}
-            <div className="h-[220px] md:h-[320px] bg-gradient-to-t from-black to-transparent flex flex-col justify-end pb-4 md:pb-8 relative z-50">
+            <div className="h-[220px] md:h-[320px] bg-gradient-to-t from-black to-transparent flex flex-col justify-end pb-4 md:pb-8 relative z-10">
                 {/* Scrollable Hand Area */}
                 <div className="w-full flex-1 overflow-x-auto overflow-y-hidden px-6 py-4 custom-scrollbar flex items-center justify-start md:justify-center">
                     <div className="flex px-12 py-10 transition-all duration-300 min-w-max">
