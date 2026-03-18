@@ -9,6 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "@clerk/nextjs": "^7.0.4",
     "@supabase/supabase-js": "^2.99.1",
     "@types/simple-peer": "^9.11.9",
