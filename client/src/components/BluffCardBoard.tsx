@@ -334,8 +334,8 @@ export function BluffCardBoard() {
             {/* Bottom Section - Hand & Actions */}
             <div className="h-[220px] md:h-[320px] bg-gradient-to-t from-black to-transparent flex flex-col justify-end pb-4 md:pb-8 relative z-50">
                 {/* Scrollable Hand Area */}
-                <div className="w-full flex-1 overflow-x-auto overflow-y-hidden px-10 py-4 custom-scrollbar flex items-center justify-center">
-                    <div className="flex px-10 py-10 transition-all duration-300">
+                <div className="w-full flex-1 overflow-x-auto overflow-y-hidden px-6 py-4 custom-scrollbar flex items-center justify-start md:justify-center">
+                    <div className="flex px-12 py-10 transition-all duration-300 min-w-max">
                         {myHand.map((card, i) => (
                             <Card
                                 key={`${card.suit}-${card.rank}-${i}`}
