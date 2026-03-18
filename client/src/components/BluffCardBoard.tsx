@@ -48,9 +48,7 @@ export function BluffCardBoard() {
 
     useEffect(() => {
         setSelectedCards([]);
-        if (bcState.currentRank) {
-            setDeclaredRank(bcState.currentRank);
-        }
+        setDeclaredRank(bcState.currentRank || '');
     }, [bcState.currentTurn, bcState.currentRank]);
 
     // Auto-advance after reveal
