@@ -11,8 +11,76 @@ export function LastHonestBoard() {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [votedPlayerId, setVotedPlayerId] = useState<string | null>(null);
+    const [showRules, setShowRules] = useState(false);
 
     if (!gameState || !player || !room) return null;
+
+    const RulesModal = () => (
+        <AnimatePresence>
+            {showRules && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+                    onClick={() => setShowRules(false)}
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, y: 20 }}
+                        animate={{ scale: 1, y: 0 }}
+                        exit={{ scale: 0.9, y: 20 }}
+                        className="bg-[#1a1c2c] border-4 border-purple-500/50 rounded-[40px] p-8 max-w-lg w-full shadow-[0_20px_50px_rgba(147,51,234,0.3)] relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setShowRules(false)}
+                            className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors text-2xl"
+                        >
+                            ✕
+                        </button>
+                        <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tighter">How to Play 📖</h2>
+                        <div className="space-y-6 text-white/80 font-medium">
+                            <div className="flex gap-4">
+                                <span className="text-2xl">☝️</span>
+                                <p><span className="text-purple-400 font-bold">The Setup:</span> One player is chosen as the Question Setter to create a question for the squad.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="text-2xl">🎭</span>
+                                <p><span className="text-purple-400 font-bold">The Roles:</span> One player is secretly <span className="text-green-400">Honest</span>, while everyone else are <span className="text-red-400">Liars</span>.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="text-2xl">💬</span>
+                                <p><span className="text-purple-400 font-bold">The Answers:</span> Everyone submits an answer. The Honest player must tell the truth, while Liars attempt to deceive.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="text-2xl">🕵️‍♂️</span>
+                                <p><span className="text-purple-400 font-bold">The Vote:</span> After answers are revealed, everyone votes for the player they think is Honest.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="text-2xl">🏆</span>
+                                <p><span className="text-purple-400 font-bold">Winning:</span> Liars win by correctly guessing the Honest player. The Honest player wins if they remain undetected!</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowRules(false)}
+                            className="btn-primary w-full mt-8 py-4 text-xl"
+                        >
+                            GOT IT! 🚀
+                        </button>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+
+    const RulesButton = () => (
+        <button
+            onClick={() => setShowRules(true)}
+            className="fixed top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full border border-white/20 flex items-center justify-center transition-all group"
+        >
+            <span className="text-xl group-hover:scale-110 transition-transform">ℹ️</span>
+        </button>
+    );
     const honestState = gameState as LastHonestGameState;
     const isSetter = player.id === honestState.questionSetterId;
     const isHonest = player.id === honestState.honestPlayerId || (honestState as any).isHonest;
@@ -21,6 +89,8 @@ export function LastHonestBoard() {
     if (honestState.status === 'WAITING') {
         return (
             <div className="flex flex-col items-center gap-6 md:gap-8 w-full max-w-2xl px-2 py-4 md:px-4 md:py-8">
+                <RulesButton />
+                <RulesModal />
                 <div className="text-center space-y-4">
                     <h3 className="text-3xl md:text-5xl font-black candy-text uppercase tracking-tighter">
                         ROUND {honestState.currentRound}
@@ -67,6 +137,8 @@ export function LastHonestBoard() {
 
         return (
             <div className="flex flex-col items-center gap-6 md:gap-8 w-full max-w-2xl px-2 py-4 md:px-4 md:py-8">
+                <RulesButton />
+                <RulesModal />
                 <div className="text-center space-y-4 w-full">
                     <div className="w-full flex justify-center mb-4">
                         <span className={`px-6 py-2 rounded-full text-sm font-black uppercase tracking-widest border-2 ${isHonest ? 'bg-green-500/20 border-green-500 text-green-500' : 'bg-red-500/20 border-red-500 text-red-500'}`}>
@@ -130,6 +202,8 @@ export function LastHonestBoard() {
 
         return (
             <div className="flex flex-col items-center gap-8 w-full max-w-5xl px-2 py-4">
+                <RulesButton />
+                <RulesModal />
                 <div className="text-center space-y-4">
                     <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic">
                         "FIND THE HONEST PLAYER" 🕵️‍♂️
@@ -146,10 +220,10 @@ export function LastHonestBoard() {
                             whileHover={!hasVoted && p.id !== player.id ? { scale: 1.02, y: -5 } : {}}
                             onClick={() => !hasVoted && p.id !== player.id && makeMove({ votedPlayerId: p.id })}
                             className={`p-6 rounded-[32px] border-4 transition-all cursor-pointer relative overflow-hidden group ${honestState.votes[player.id] === p.id
-                                    ? 'bg-purple-600 border-purple-400 shadow-[0_0_30px_rgba(147,51,234,0.5)]'
-                                    : hasVoted || p.id === player.id
-                                        ? 'bg-white/5 border-white/5 opacity-60 grayscale'
-                                        : 'bg-white/5 border-white/10 hover:border-purple-500'
+                                ? 'bg-purple-600 border-purple-400 shadow-[0_0_30px_rgba(147,51,234,0.5)]'
+                                : hasVoted || p.id === player.id
+                                    ? 'bg-white/5 border-white/5 opacity-60 grayscale'
+                                    : 'bg-white/5 border-white/10 hover:border-purple-500'
                                 }`}
                         >
                             <div className="flex items-center gap-4 mb-4">
@@ -187,6 +261,8 @@ export function LastHonestBoard() {
 
         return (
             <div className="flex flex-col items-center gap-8 w-full max-w-4xl px-2 py-4">
+                <RulesButton />
+                <RulesModal />
                 <div className="text-center mb-8">
                     <h3 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic mb-4">
                         THE TRUTH REVEALED! 🎭
