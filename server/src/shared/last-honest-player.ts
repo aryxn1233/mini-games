@@ -74,7 +74,7 @@ export class LastHonestEngine implements IGameEngine {
             }
 
             const { votedPlayerId } = move;
-            if (!newState.scores[votedPlayerId]) {
+            if (!(votedPlayerId in newState.scores)) {
                 return { newState, valid: false, error: "Invalid player selected!" };
             }
 
