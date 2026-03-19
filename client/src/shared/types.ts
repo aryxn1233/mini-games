@@ -68,7 +68,19 @@ export interface BluffCardGameState extends GameState {
   finishedPlayers: string[];
 }
 
-export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR' | 'BLUFF' | 'BLUFF_CARD';
+export interface LastHonestGameState extends GameState {
+  status: 'WAITING' | 'SUBMITTING' | 'VOTING' | 'REVEALING' | 'FINISHED';
+  questionSetterId: string;
+  question?: string;
+  honestPlayerId?: string;
+  answers: { [playerId: string]: string };
+  votes: { [voterId: string]: string };
+  scores: { [playerId: string]: number };
+  currentRound: number;
+  totalRounds: number;
+}
+
+export type GameType = 'TIC_TAC_TOE' | 'SNAKE_LADDERS' | 'LUDO' | 'HANGMAN' | 'LIE_DETECTOR' | 'BLUFF' | 'BLUFF_CARD' | 'LAST_HONEST_PLAYER';
 
 export interface IGameEngine {
   initialize(players: Player[]): GameState;

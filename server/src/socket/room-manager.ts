@@ -6,6 +6,8 @@ import { HangmanEngine } from '../shared/hangman';
 import { LieDetectorEngine } from '../shared/lie-detector';
 import { BluffEngine } from '../shared/bluff';
 import { BluffCardEngine } from '../shared/bluff-card';
+import { LastHonestEngine } from '../shared/last-honest-player';
+import { LastHonestGameState } from '../shared/types';
 
 export class RoomManager {
     private rooms: Map<string, Room> = new Map();
@@ -131,6 +133,7 @@ export class RoomManager {
             case 'LIE_DETECTOR': return new LieDetectorEngine();
             case 'BLUFF': return new BluffEngine();
             case 'BLUFF_CARD': return new BluffCardEngine();
+            case 'LAST_HONEST_PLAYER': return new LastHonestEngine();
             default: return null;
         }
     }
@@ -203,6 +206,20 @@ export class RoomManager {
             }
 
             sanitizedRoom.gameState = hiddenState;
+        }
+        if (sanitizedRoom.gameType === 'LAST_HONEST_PLAYER' && sanitizedRoom.gameState) {
+            const honestState = sanitizedRoom.gameState as LastHonestGameState;
+            // Hide honestPlayerId from everyone except common reveal phases
+            if (honestState.status !== 'REVEALING' && honestState.status !== 'FINISHED') {
+                const hiddenState = { ...honestState };
+                const isHonest = honestState.honestPlayerId === playerId;
+
+                // Keep honestPlayerId ONLY for the honest player themselves
+                if (!isHonest) {
+                    delete (hiddenState as any).honestPlayerId;
+                }
+                sanitizedRoom.gameState = hiddenState;
+            }
         }
         return sanitizedRoom;
     }

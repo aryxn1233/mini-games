@@ -8,6 +8,7 @@ import { SocialPanel } from '../components/SocialPanel';
 import { LieDetectorBoard } from '../components/LieDetectorBoard';
 import { BluffBoard } from '../components/BluffBoard';
 import { BluffCardBoard } from '../components/BluffCardBoard';
+import { LastHonestBoard } from '../components/LastHonestBoard';
 
 export default function Home() {
   const { player, room, connect, createRoom, joinRoom, startGame, gameState } = useGameStore();
@@ -144,6 +145,9 @@ export default function Home() {
             <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('BLUFF_CARD')} className="px-6 py-2 rounded-full border-2 border-indigo-500/50 bg-indigo-600 text-white font-black text-xl hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)]">
               🃏 BLUFF CARD 🎭
             </motion.button>
+            <motion.button whileHover={{ scale: 1.1 }} onClick={() => startGame('LAST_HONEST_PLAYER')} className="px-6 py-2 rounded-full border-2 border-emerald-500/50 bg-emerald-600 text-white font-black text-xl hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+              🤫 LAST HONEST 😇
+            </motion.button>
           </div>
         </motion.div>
 
@@ -274,6 +278,19 @@ export default function Home() {
                   </div>
                 )}
 
+                {room.gameType === 'LAST_HONEST_PLAYER' && (gameState as any).honestPlayerId && (
+                  <div className="mb-10 bg-white/5 p-6 rounded-3xl border border-white/10">
+                    <p className="text-white/30 font-black uppercase tracking-widest text-xs mb-2">
+                      The Real Honest Player was revealed! 😇
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 mt-4">
+                      <span className="bg-emerald-500 text-white px-6 py-2 rounded-full text-lg font-black shadow-lg">
+                        {room.players.find(p => p.id === (gameState as any).honestPlayerId)?.username}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Leaderboard Section */}
                 <div className="bg-white/10 rounded-3xl p-6 mb-10 border border-white/10 shadow-2xl">
                   <h3 className="text-2xl font-black text-white/50 uppercase tracking-widest mb-6 border-b border-white/10 pb-4">
@@ -386,6 +403,7 @@ export default function Home() {
           {room.gameType === 'LIE_DETECTOR' && <LieDetectorBoard />}
           {room.gameType === 'BLUFF' && <BluffBoard />}
           {room.gameType === 'BLUFF_CARD' && <BluffCardBoard />}
+          {room.gameType === 'LAST_HONEST_PLAYER' && <LastHonestBoard />}
           {room.gameType === 'LUDO' && <p className="text-4xl font-black">LUDO PARTY COMING SOON! 🎲✨</p>}
         </div>
       </motion.div>
